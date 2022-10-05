@@ -1,43 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   minitalk.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jeykim <jeykim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/23 18:17:01 by seohyuki          #+#    #+#             */
-/*   Updated: 2022/10/05 16:20:03 by jeykim           ###   ########.fr       */
+/*   Created: 2022/09/22 20:36:02 by jeykim            #+#    #+#             */
+/*   Updated: 2022/10/05 19:17:14 by jeykim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minitalk.h"
+#ifndef MINITALK_H
+# define MINITALK_H
+# define LEN 8
+# define SLP_TIME 500
 
-int	main(int argc, char *argv[])
-{
+# include "ft_printf.h"
+# include "signal.h"
+# include "stdlib.h"
+
+typedef struct elem{
+	int		count;
+	int		letter;
 	pid_t	pid;
-	int		idx;
-	int		sub_idx;
-	char	*str;
-	char	elem;
+}	t_elem;
 
-	if (argc != 3)
-		exit(0);
-	pid = ft_atoi(argv[1]);
-	idx = 0;
-	str = argv[2];
-	while (str[idx] != '\0')
-	{
-		sub_idx = 0;
-		elem = str[idx];
-		while (sub_idx < LEN)
-		{
-			if ((elem & (1 << sub_idx)) != 0)
-				kill(pid, SIGUSR2);
-			else
-				kill(pid, SIGUSR1);
-			usleep(200);
-			sub_idx++;
-		}
-		idx++;
-	}
-}
+typedef struct celem{
+	char				*str;
+	struct sigaction	sa;
+	int					idx;
+	pid_t				pid;
+}	t_celem;
+
+int	ft_atoi(const char *str);
+
+#endif
