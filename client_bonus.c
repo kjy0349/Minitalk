@@ -1,49 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jeykim <jeykim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/23 18:17:01 by seohyuki          #+#    #+#             */
-/*   Updated: 2022/10/05 19:19:14 by jeykim           ###   ########.fr       */
+/*   Updated: 2022/10/06 18:27:10 by jeykim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minitalk.h"
+#include "minitalk_bonus.h"
 
-t_celem g_cinfo;
-
-void	check(int signum, siginfo_t *info)
+void	check(int signum)
 {
-	(void)info;
 	if (signum != SIGUSR1)
 		exit(0);
 }
 
-int	main(int argc, char *argv[])
+int	send_str(char *str, int pid)
 {
-	pid_t	pid;
 	int		idx;
 	int		sub_idx;
-	char	*str;
+	int		flag;
 	char	elem;
 
-	if (argc != 3)
-		exit(0);
-	pid = ft_atoi(argv[1]);
+	flag = 0;
 	idx = 0;
-	g_cinfo.str = argv[2];
-	g_cinfo.sa.sa_sigaction = (void *)check;
-	if (argc != 3)
-		exit(0);
-	pid = ft_atoi(argv[1]);
-	idx = 0;
-	str = argv[2];
-	sigaction(SIGUSR1, &g_cinfo.sa, NULL);
-	sigaction(SIGUSR2, &g_cinfo.sa, NULL);
 	while (str[idx] != '\0')
 	{
+		flag = 1;
 		sub_idx = 0;
 		elem = str[idx];
 		while (sub_idx < LEN)
@@ -53,17 +39,46 @@ int	main(int argc, char *argv[])
 				kill(pid, SIGUSR2);
 			else
 				kill(pid, SIGUSR1);
-			pause();
 			sub_idx++;
+			pause();
 		}
 		idx++;
 	}
+	return (flag);
+}
+
+void	send_zero(int pid)
+{
+	int	sub_idx;
+
 	sub_idx = 0;
 	while (sub_idx < LEN)
 	{
 		usleep(SLP_TIME);
 		kill(pid, SIGUSR1);
-		pause();
 		sub_idx++;
+		pause();
 	}
+}
+
+int	main(int argc, char *argv[])
+{
+	pid_t	pid;
+	char	*str;
+	int		flag;
+	int		sub_idx;
+
+	if (argc != 3)
+		exit(0);
+	pid = ft_atoi(argv[1]);
+	if (pid < 100)
+		exit(0);
+	str = argv[2];
+	signal(SIGUSR1, check);
+	signal(SIGUSR2, check);
+	flag = send_str(str, pid);
+	sub_idx = 0;
+	if (flag)
+		send_zero(pid);
+	return (0);
 }
